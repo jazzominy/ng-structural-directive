@@ -66,3 +66,21 @@ set forEachFrom (value: any) {
     console.info(value);
 }
 ```
+
+So now that we have the data, we can use it to pass in the context to the template dynamically as
+
+``` 
+@Input()
+set forEachFrom (value: any) {
+    this.view.clear();
+
+    if (Array.isArray(value)) {
+        value.forEach(item => {
+            this.view.createEmbeddedView(this.template, {
+                $implicit: item
+            });
+        })
+    }
+}
+```
+Complete implementation is [here](src/app/directive/for-each.directive.ts)

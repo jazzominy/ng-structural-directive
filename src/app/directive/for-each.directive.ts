@@ -11,7 +11,7 @@ import { AfterViewInit, Directive, ElementRef, Input, TemplateRef, ViewContainer
  * <div *forEach="let message">{{message}}</div>
  * 
  * What angular will do is
- * <ng-template forEach let-message>
+ * <ng-template [forEach] let-message>
  *     <div>{{message}}</div>
  * </ng-template>
  * 
@@ -19,30 +19,54 @@ import { AfterViewInit, Directive, ElementRef, Input, TemplateRef, ViewContainer
  * 
  * ngAfterViewInit() {
         this.view.createEmbeddedView(this.template, {
-            $implicit: 'Yo man' // the value of $implicit will be passed on as is to message template variable
+            $implicit: 'Yo man'
         });
-    } 
+    }
+
+ * The value of $implicit will be passed on as is to message template variable
+    and it will be displayed in the host element div
+
+ * Now lets say we want to pass in the context dynamically like <div *forEach="let message from messages">{{message}}</div>
+    In this case what angular will do is it will pass in the `messages` object to the an input property by the name forEachFrom like
+    <ng-template [forEach] let-message [forEachFrom]="messages">
+ *     <div>{{message}}</div>
+ * </ng-template>
+ * The input prop name is formed as directive selector + key word used in expression passed in to *forEach.
+ * So in our example we have `*forEach="let message from messages"`. Here `from` is a keyword.
+ * So the input prop name formed is `forEachFrom`. We define a setter for this input prop as
+ * 
+ * `@Input()
+    set forEachFrom (value: any) {
+        console.info(value);
+    }`
+ * 
  */
 
 @Directive({
     selector: '[forEach]',
 })
-export class ForEachDirective implements AfterViewInit {
+export class ForEachDirective {
 
-    @Input() set forEach (value: any) {
-        console.info(value);
+    @Input()
+    set forEachFrom (value: any) {
+        this.view.clear();
+
+        if (Array.isArray(value)) {
+            value.forEach(item => {
+                this.view.createEmbeddedView(this.template, {
+                    $implicit: item
+                });
+            })
+        }
     }
 
     constructor (
         private el: ElementRef,
+        // This is host container where we create an embedded view for the template
         private view: ViewContainerRef,
+        // This holds the reference to the ng-template that is generated from the element
+        // on which *forEach is used
         private template: TemplateRef<any>
     ) {
-    }
-
-    ngAfterViewInit() {
-        this.view.createEmbeddedView(this.template, {
-            $implicit: 'Yo man'
-        });
     }
 }

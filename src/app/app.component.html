@@ -5,4 +5,4 @@
 <ng-template [ngTemplateOutlet]="template.view"></ng-template>
 
 
-<div *forEach="let message">{{message}}</div>
+<div *forEach="let message from messages">{{message}}</div>

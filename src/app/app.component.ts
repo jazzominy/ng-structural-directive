@@ -14,6 +14,12 @@ export class AppComponent {
   })
   template!: CustomDirective;
 
+  messages = [
+    'Message The Great',
+    'Message The Majestic',
+    'Message The King',
+  ]
+
   constructor () {
 
   }

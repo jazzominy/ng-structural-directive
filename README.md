@@ -1,6 +1,6 @@
 # Structural Directive
 
-An attempt to create a `*forEach` of my own
+An attempt to create a custom `*forEach`
 
 
 ## The implementation
